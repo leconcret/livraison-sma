@@ -1,0 +1,24 @@
+[project]
+name = "livraison-sma"
+version = "0.1.0"
+description = "Plateforme de livraison urbaine à allocation par appel d'offres (Contract Net)"
+requires-python = ">=3.11"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint.flake8-bugbear]
+# Depends() et Query() dans les signatures : usage normal de FastAPI.
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]

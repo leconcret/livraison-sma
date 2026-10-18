@@ -1,0 +1,25 @@
+flowchart LR
+  Client(["Client"])
+  Livreur(["Livreur"])
+  Rep(["Répartiteur"])
+  Adm(["Administrateur"])
+  subgraph Plateforme["Plateforme Livraison SMA"]
+    U1["Se connecter par SMS (F-01)"]
+    U2["Demander un devis (F-11)"]
+    U3["Commander une livraison (F-10)"]
+    U4["Suivre sa commande (F-12)"]
+    U5["Annuler (F-13)"]
+    U6["Passer en ligne / hors ligne (F-20)"]
+    U7["Accepter ou décliner une course (F-21)"]
+    U8["Valider enlèvement et remise par code (F-23)"]
+    U9["Signaler un incident (F-24)"]
+    U10["Superviser carte et commandes (F-60, F-61)"]
+    U11["Réattribuer, annuler, suspendre (F-62)"]
+    U12["Consulter le journal des agents (F-63)"]
+    U13["Valider les livreurs (F-03)"]
+    U14["Tableau de bord (F-64)"]
+  end
+  Client --- U1 & U2 & U3 & U4 & U5
+  Livreur --- U1 & U6 & U7 & U8 & U9
+  Rep --- U10 & U11 & U12
+  Adm --- U13 & U14 & U10

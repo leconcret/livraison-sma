@@ -1,0 +1,51 @@
+erDiagram
+  UTILISATEUR ||--o| LIVREUR : "téléphone"
+  UTILISATEUR ||--o{ COMMANDE : "passe (client)"
+  LIVREUR ||--o{ COMMANDE : "livre"
+  COMMANDE ||--o{ OFFRE : "reçoit"
+  LIVREUR ||--o{ OFFRE : "propose"
+  COMMANDE ||--o{ PAIEMENT : "est réglée par"
+  COMMANDE ||--o{ EVENEMENT : "journal"
+  UTILISATEUR { int id PK
+    string telephone UK
+    string nom
+    string role }
+  LIVREUR { int id PK
+    string telephone UK
+    string vehicule
+    int capacite
+    bool valide
+    bool suspendu
+    float note
+    int especes_detenues }
+  COMMANDE { int id PK
+    string client FK
+    geography geo_enlevement
+    geography geo_livraison
+    string taille
+    bool urgent
+    string mode_paiement
+    int prix
+    string etat
+    int livreur_id FK
+    string code
+    int tentatives
+    datetime cree_a }
+  OFFRE { int id PK
+    int commande_id FK
+    int livreur_id FK
+    float cout
+    float eta_s
+    string resultat
+    int tentative }
+  PAIEMENT { int id PK
+    int commande_id FK
+    string mode
+    int montant
+    string reference
+    string etat }
+  EVENEMENT { int id PK
+    string ts
+    string categorie
+    int commande_id
+    jsonb donnees }

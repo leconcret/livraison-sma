@@ -1,0 +1,23 @@
+sequenceDiagram
+  autonumber
+  participant CO as Commande-12
+  participant DI as Dispatcher
+  participant L1 as Livreur-1
+  participant L2 as Livreur-2
+  participant PA as Passerelle
+  Note over DI: offres classées : L1 puis L2
+  DI->>L1: accept-proposal
+  DI->>L2: reject-proposal (L2 libère sa réservation)
+  L1->>PA: inform / proposition
+  Note over L1,PA: le livreur décline, ou ne répond pas en 30 s
+  L1-->>DI: refuse / confirmation (decline ou sans-reponse)
+  DI->>L2: accept-proposal (offre suivante)
+  Note over L2: revérifie sa capacité
+  L2->>PA: inform / proposition
+  PA->>L2: request / reponse (acceptée)
+  L2-->>DI: agree / confirmation
+  DI->>CO: inform / attribution (livreur-2)
+  Note over L2: plus tard : panne ou GPS muet plus de 180 s
+  L2->>CO: failure / incident (panne)
+  CO->>DI: request / attribuer (tentative 2, exclure livreur-2)
+  Note over DI: nouvel appel d'offres cmd-12-t2

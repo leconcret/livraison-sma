@@ -1,0 +1,12 @@
+stateDiagram-v2
+  [*] --> RECHERCHE
+  RECHERCHE --> COLLECTE: candidats trouvés dans le rayon
+  RECHERCHE --> ECHEC: aucun livreur
+  COLLECTE --> ATTRIBUTION: au moins une offre
+  COLLECTE --> ECHEC: aucune offre (délai 2 s)
+  ATTRIBUTION --> CONFIRMATION: ACCEPT à l'offre de rang k
+  ATTRIBUTION --> ECHEC: plus d'offre disponible
+  CONFIRMATION --> SUCCES: AGREE du livreur
+  CONFIRMATION --> ATTRIBUTION: REFUSE ou silence (k+1)
+  SUCCES --> [*]: inform attribution à la Commande
+  ECHEC --> [*]: file d'attente, rayon x2, urgentes d'abord

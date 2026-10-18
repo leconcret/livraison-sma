@@ -1,0 +1,30 @@
+sequenceDiagram
+  autonumber
+  participant CO as Commande-12
+  participant DI as Dispatcher
+  participant AN as Annuaire
+  participant L1 as Livreur-1
+  participant L2 as Livreur-2
+  participant PA as Passerelle (téléphone)
+  CO->>DI: request / attribuer (commande)
+  DI->>AN: query-ref / recherche (rayon 3 km, taille)
+  AN-->>DI: inform / resultat [L1, L2]
+  par Appel d'offres (conversation cmd-12-t1)
+    DI->>L1: cfp (enlèvement, livraison, taille)
+    DI->>L2: cfp
+  end
+  L1-->>DI: propose (coût 412 s, ETA)
+  L2-->>DI: propose (coût 655 s, ETA)
+  Note over DI: classement : coût, puis note, puis ordre d'arrivée
+  DI->>L1: accept-proposal (commande)
+  DI->>L2: reject-proposal
+  L1->>PA: inform / proposition (délai 30 s)
+  PA->>L1: request / reponse (acceptée par le livreur humain)
+  L1-->>DI: agree / confirmation
+  DI->>CO: inform / attribution (livreur-1, ETA)
+  PA->>L1: request / enlevement
+  L1->>CO: inform / etape (enlevée)
+  PA->>L1: request / remise (code)
+  L1->>CO: request / remise (code)
+  CO-->>L1: inform / remise-resultat (ok)
+  Note over CO: Livrée puis Clôturée, puis arrêt de l agent Commande

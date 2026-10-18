@@ -1,0 +1,555 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.7.0
+rootdir: C:\projets\livraison-sma
+configfile: pyproject.toml
+plugins: anyio-4.15.1, flet-1.0.4, asyncio-1.4.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 1 item
+
+tests/test_api.py::test_parcours_complet 
+------------------------------- live log setup --------------------------------
+WARNING  livraison.api:main.py:128 Dépôt en mémoire : les données seront perdues à l'arrêt du serveur
+WARNING  livraison.services.itineraires:itineraires.py:104 OSRM indisponible (ConnectError) : bascule sur l'estimation
+INFO     livraison.services.itineraires:itineraires.py:126 Moteur d'itinéraires : estimation (OSRM non disponible)
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: annuaire@0.0.0.0/a39e8c03-fb5e-47a2-a3cc-142c623a624a
+INFO     spade.Agent:agent.py:225 Agent annuaire@localhost connected and authenticated.
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: superviseur@0.0.0.0/5f3811f5-f625-4ff3-a132-f2a12b8c03e7
+INFO     spade.Agent:agent.py:225 Agent superviseur@localhost connected and authenticated.
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: notification@0.0.0.0/7e6aadc4-c2e5-4408-8521-02034ec0a576
+INFO     spade.Agent:agent.py:225 Agent notification@localhost connected and authenticated.
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: paiement@0.0.0.0/7d0362f1-0588-4ca9-a758-49f947eb3700
+INFO     spade.Agent:agent.py:225 Agent paiement@localhost connected and authenticated.
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: passerelle@0.0.0.0/96551dc4-3c9d-4f54-9275-875d303c10d8
+INFO     spade.Agent:agent.py:225 Agent passerelle@localhost connected and authenticated.
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: dispatcher@0.0.0.0/51d4f11e-fe9b-4a77-94ea-215266c22d23
+INFO     spade.Agent:agent.py:225 Agent dispatcher@localhost connected and authenticated.
+INFO     livraison.messages:base.py:84 RECU  annuaire <- dispatcher | subscribe abonnement |  | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI dispatcher -> annuaire | subscribe abonnement | 
+-------------------------------- live log call --------------------------------
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/code "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/jeton "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/livreurs/inscription "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/code "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/jeton "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/admin/livreurs/1/valider "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/code "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/jeton "HTTP/1.1 200 OK"
+INFO     livraison.messages:base.py:84 RECU  dispatcher <- annuaire | agree abonnement |  | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI annuaire -> dispatcher | agree abonnement | 
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: livreur-1@0.0.0.0/19cc06d7-013e-41d2-8e28-40d33e0dfbae
+INFO     spade.Agent:agent.py:225 Agent livreur-1@localhost connected and authenticated.
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/livreur/en-ligne "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/code "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/jeton "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/devis "HTTP/1.1 200 OK"
+INFO     livraison.messages:base.py:77 ENVOI passerelle -> livreur-1 | inform position | 
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: commande-1@0.0.0.0/0d5d761c-9260-4720-a217-587b031a8e70
+INFO     spade.Agent:agent.py:225 Agent commande-1@localhost connected and authenticated.
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/commandes "HTTP/1.1 201 Created"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     livraison.messages:base.py:84 RECU  notification <- commande-1 | inform notification | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI commande-1 -> notification | inform notification | cmd-1
+INFO     livraison.messages:base.py:84 RECU  notification <- commande-1 | inform notification | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI commande-1 -> notification | inform notification | cmd-1
+INFO     livraison.messages:base.py:84 RECU  notification <- commande-1 | inform notification | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI commande-1 -> notification | inform notification | cmd-1
+INFO     livraison.messages:base.py:84 RECU  dispatcher <- commande-1 | request attribuer | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI commande-1 -> dispatcher | request attribuer | cmd-1
+INFO     spade.behaviour:behaviour.py:731 FSM running state recherche
+INFO     livraison.messages:base.py:84 RECU  annuaire <- dispatcher | query-ref recherche | cmd-1-t1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI dispatcher -> annuaire | query-ref recherche | cmd-1-t1
+INFO     livraison.messages:annuaire.py:64 annuaire : 0 livreur(s) inscrit(s), 0 retenu(s) pour {'centre': {'lat': 5.3236, 'lon': -4.0197}, 'rayon_km': 3.0, 'taille': 'petit', 'exclure': [], 'geo': True}
+INFO     livraison.messages:base.py:84 RECU  dispatcher <- annuaire | inform resultat | cmd-1-t1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI annuaire -> dispatcher | inform resultat | cmd-1-t1
+INFO     spade.behaviour:behaviour.py:754 FSM transiting from recherche to echec.
+INFO     spade.behaviour:behaviour.py:731 FSM running state echec
+INFO     livraison.messages:base.py:84 RECU  commande-1 <- dispatcher | inform recherche-infructueuse | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI dispatcher -> commande-1 | inform recherche-infructueuse | cmd-1
+INFO     spade.behaviour:behaviour.py:767 FSM arrived to a final state (no transitions found). Killing FSM.
+INFO     spade.behaviour:behaviour.py:184 Killing behavior FSMBehaviour/AppelDOffres with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior FSMBehaviour/AppelDOffres with exit code: None
+INFO     livraison.messages:base.py:84 RECU  notification <- commande-1 | inform notification | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI commande-1 -> notification | inform notification | cmd-1
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     spade.behaviour:behaviour.py:731 FSM running state recherche
+INFO     livraison.messages:base.py:84 RECU  annuaire <- dispatcher | query-ref recherche | cmd-1-t2 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI dispatcher -> annuaire | query-ref recherche | cmd-1-t2
+INFO     livraison.messages:annuaire.py:64 annuaire : 0 livreur(s) inscrit(s), 0 retenu(s) pour {'centre': {'lat': 5.3236, 'lon': -4.0197}, 'rayon_km': 6.0, 'taille': 'petit', 'exclure': [], 'geo': True}
+INFO     livraison.messages:base.py:84 RECU  dispatcher <- annuaire | inform resultat | cmd-1-t2 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI annuaire -> dispatcher | inform resultat | cmd-1-t2
+INFO     spade.behaviour:behaviour.py:754 FSM transiting from recherche to echec.
+INFO     spade.behaviour:behaviour.py:731 FSM running state echec
+INFO     livraison.messages:base.py:84 RECU  commande-1 <- dispatcher | inform recherche-infructueuse | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI dispatcher -> commande-1 | inform recherche-infructueuse | cmd-1
+INFO     spade.behaviour:behaviour.py:767 FSM arrived to a final state (no transitions found). Killing FSM.
+INFO     spade.behaviour:behaviour.py:184 Killing behavior FSMBehaviour/AppelDOffres with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior FSMBehaviour/AppelDOffres with exit code: None
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+FAILED                                                                   [100%]
+------------------------------ live log teardown ------------------------------
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Cycle with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior PeriodicBehaviour/Surveillance with exit code: None
+INFO     slixmpp.xmlstream.xmlstream:xmlstream.py:653 connection_lost: (None,)
+INFO     spade.Agent:agent.py:353 Client disconnected.
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Demandes with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Annonces with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Abonnement with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior PeriodicBehaviour/Relanceur with exit code: None
+INFO     slixmpp.xmlstream.xmlstream:xmlstream.py:653 connection_lost: (None,)
+INFO     spade.Agent:agent.py:353 Client disconnected.
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Emettre with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Recevoir with exit code: None
+INFO     slixmpp.xmlstream.xmlstream:xmlstream.py:653 connection_lost: (None,)
+INFO     spade.Agent:agent.py:353 Client disconnected.
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Guichet with exit code: None
+INFO     slixmpp.xmlstream.xmlstream:xmlstream.py:653 connection_lost: (None,)
+INFO     spade.Agent:agent.py:353 Client disconnected.
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Envoi with exit code: None
+INFO     slixmpp.xmlstream.xmlstream:xmlstream.py:653 connection_lost: (None,)
+INFO     spade.Agent:agent.py:353 Client disconnected.
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Veille with exit code: None
+INFO     slixmpp.xmlstream.xmlstream:xmlstream.py:653 connection_lost: (None,)
+INFO     spade.Agent:agent.py:353 Client disconnected.
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Guichet with exit code: None
+INFO     slixmpp.xmlstream.xmlstream:xmlstream.py:653 connection_lost: (None,)
+INFO     spade.Agent:agent.py:353 Client disconnected.
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Demandes with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Abonnement with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Cycle with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior PeriodicBehaviour/Relanceur with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Guichet with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior PeriodicBehaviour/Surveillance with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Veille with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Guichet with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Recevoir with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Annonces with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Envoi with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior CyclicBehaviour/Emettre with exit code: None
+INFO     slixmpp.xmlstream.xmlstream:xmlstream.py:653 connection_lost: (None,)
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: annuaire@0.0.0.0/5a2a4b84-7879-4230-bb94-c13a0b221eda
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: superviseur@0.0.0.0/808b2025-e904-4909-bb81-caf1c8b4efdc
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: notification@0.0.0.0/00a0952f-c305-4781-b05b-e30e99860e5c
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: paiement@0.0.0.0/0e5c0730-c189-4568-8ba1-fdb158341ae9
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: passerelle@0.0.0.0/fcd289c8-d9bf-416c-9422-4be2000be6d5
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: dispatcher@0.0.0.0/667b9fa0-f5d8-4338-b5e5-069195ae6b64
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: livreur-1@0.0.0.0/862203bd-7381-40f1-9c51-a34a0d2f3d4a
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: commande-1@0.0.0.0/8d0f5c09-4701-4a0d-ab0b-fbf90bf76f10
+
+
+================================== FAILURES ===================================
+____________________________ test_parcours_complet ____________________________
+
+api = <httpx.AsyncClient object at 0x0000017A08313390>
+
+    async def test_parcours_complet(api):
+        plateau, cocody = C["Plateau"], C["Cocody"]
+        # Livreur : inscription, validation par l'administrateur, connexion
+        h_l, _ = await connexion(api, "0707070707", "Kouassi")
+        r = await api.post("/livreurs/inscription", headers=h_l, json={"nom": "Kouassi", "capacite": 2})
+        lid = r.json()["livreur"]["id"]
+        h_admin, _ = await connexion(api, parametres.admin_telephone)
+        assert (await api.post(f"/admin/livreurs/{lid}/valider", headers=h_admin)).status_code == 200
+        h_l, info = await connexion(api, "0707070707")
+        assert info["role"] == "livreur" and info["livreur_id"] == lid
+        r = await api.post("/livreur/en-ligne", headers=h_l,
+                           json={"lat": plateau.lat + 0.003, "lon": plateau.lon})
+        assert r.status_code == 200
+    
+        # Client : devis puis commande
+        h_c, _ = await connexion(api, "0505050505", "Aminata")
+        trajet = {"enlevement": plateau.vers_dict(), "livraison": cocody.vers_dict()}
+        dv = (await api.post("/devis", json=trajet)).json()
+        assert dv["prix"] >= 700 and dv["devise"] == "FCFA"
+        r = await api.post("/commandes", headers=h_c, json={**trajet, "destinataire": "Moussa"})
+        assert r.status_code == 201
+        cmd = r.json()["commande"]
+        code = cmd["code"]
+    
+        # Le téléphone du livreur reçoit la proposition et l'accepte
+        for _ in range(100):
+            boite = (await api.get("/livreur/boite", headers=h_l)).json()
+            if boite:
+                break
+            await asyncio.sleep(0.1)
+>       prop = boite[0]
+               ^^^^^^^^
+E       IndexError: list index out of range
+
+tests\test_api.py:43: IndexError
+----------------------------- Captured log setup ------------------------------
+WARNING  livraison.api:main.py:128 Dépôt en mémoire : les données seront perdues à l'arrêt du serveur
+WARNING  livraison.services.itineraires:itineraires.py:104 OSRM indisponible (ConnectError) : bascule sur l'estimation
+INFO     livraison.services.itineraires:itineraires.py:126 Moteur d'itinéraires : estimation (OSRM non disponible)
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: annuaire@0.0.0.0/a39e8c03-fb5e-47a2-a3cc-142c623a624a
+INFO     spade.Agent:agent.py:225 Agent annuaire@localhost connected and authenticated.
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: superviseur@0.0.0.0/5f3811f5-f625-4ff3-a132-f2a12b8c03e7
+INFO     spade.Agent:agent.py:225 Agent superviseur@localhost connected and authenticated.
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: notification@0.0.0.0/7e6aadc4-c2e5-4408-8521-02034ec0a576
+INFO     spade.Agent:agent.py:225 Agent notification@localhost connected and authenticated.
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: paiement@0.0.0.0/7d0362f1-0588-4ca9-a758-49f947eb3700
+INFO     spade.Agent:agent.py:225 Agent paiement@localhost connected and authenticated.
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: passerelle@0.0.0.0/96551dc4-3c9d-4f54-9275-875d303c10d8
+INFO     spade.Agent:agent.py:225 Agent passerelle@localhost connected and authenticated.
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: dispatcher@0.0.0.0/51d4f11e-fe9b-4a77-94ea-215266c22d23
+INFO     spade.Agent:agent.py:225 Agent dispatcher@localhost connected and authenticated.
+INFO     livraison.messages:base.py:84 RECU  annuaire <- dispatcher | subscribe abonnement |  | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI dispatcher -> annuaire | subscribe abonnement |
+------------------------------ Captured log call ------------------------------
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/code "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/jeton "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/livreurs/inscription "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/code "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/jeton "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/admin/livreurs/1/valider "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/code "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/jeton "HTTP/1.1 200 OK"
+INFO     livraison.messages:base.py:84 RECU  dispatcher <- annuaire | agree abonnement |  | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI annuaire -> dispatcher | agree abonnement | 
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: livreur-1@0.0.0.0/19cc06d7-013e-41d2-8e28-40d33e0dfbae
+INFO     spade.Agent:agent.py:225 Agent livreur-1@localhost connected and authenticated.
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/livreur/en-ligne "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/code "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/auth/jeton "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/devis "HTTP/1.1 200 OK"
+INFO     livraison.messages:base.py:77 ENVOI passerelle -> livreur-1 | inform position | 
+INFO     slixmpp.features.feature_bind.bind:bind.py:60 JID set to: commande-1@0.0.0.0/0d5d761c-9260-4720-a217-587b031a8e70
+INFO     spade.Agent:agent.py:225 Agent commande-1@localhost connected and authenticated.
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/commandes "HTTP/1.1 201 Created"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     livraison.messages:base.py:84 RECU  notification <- commande-1 | inform notification | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI commande-1 -> notification | inform notification | cmd-1
+INFO     livraison.messages:base.py:84 RECU  notification <- commande-1 | inform notification | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI commande-1 -> notification | inform notification | cmd-1
+INFO     livraison.messages:base.py:84 RECU  notification <- commande-1 | inform notification | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI commande-1 -> notification | inform notification | cmd-1
+INFO     livraison.messages:base.py:84 RECU  dispatcher <- commande-1 | request attribuer | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI commande-1 -> dispatcher | request attribuer | cmd-1
+INFO     spade.behaviour:behaviour.py:731 FSM running state recherche
+INFO     livraison.messages:base.py:84 RECU  annuaire <- dispatcher | query-ref recherche | cmd-1-t1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI dispatcher -> annuaire | query-ref recherche | cmd-1-t1
+INFO     livraison.messages:annuaire.py:64 annuaire : 0 livreur(s) inscrit(s), 0 retenu(s) pour {'centre': {'lat': 5.3236, 'lon': -4.0197}, 'rayon_km': 3.0, 'taille': 'petit', 'exclure': [], 'geo': True}
+INFO     livraison.messages:base.py:84 RECU  dispatcher <- annuaire | inform resultat | cmd-1-t1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI annuaire -> dispatcher | inform resultat | cmd-1-t1
+INFO     spade.behaviour:behaviour.py:754 FSM transiting from recherche to echec.
+INFO     spade.behaviour:behaviour.py:731 FSM running state echec
+INFO     livraison.messages:base.py:84 RECU  commande-1 <- dispatcher | inform recherche-infructueuse | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI dispatcher -> commande-1 | inform recherche-infructueuse | cmd-1
+INFO     spade.behaviour:behaviour.py:767 FSM arrived to a final state (no transitions found). Killing FSM.
+INFO     spade.behaviour:behaviour.py:184 Killing behavior FSMBehaviour/AppelDOffres with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior FSMBehaviour/AppelDOffres with exit code: None
+INFO     livraison.messages:base.py:84 RECU  notification <- commande-1 | inform notification | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI commande-1 -> notification | inform notification | cmd-1
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     spade.behaviour:behaviour.py:731 FSM running state recherche
+INFO     livraison.messages:base.py:84 RECU  annuaire <- dispatcher | query-ref recherche | cmd-1-t2 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI dispatcher -> annuaire | query-ref recherche | cmd-1-t2
+INFO     livraison.messages:annuaire.py:64 annuaire : 0 livreur(s) inscrit(s), 0 retenu(s) pour {'centre': {'lat': 5.3236, 'lon': -4.0197}, 'rayon_km': 6.0, 'taille': 'petit', 'exclure': [], 'geo': True}
+INFO     livraison.messages:base.py:84 RECU  dispatcher <- annuaire | inform resultat | cmd-1-t2 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI annuaire -> dispatcher | inform resultat | cmd-1-t2
+INFO     spade.behaviour:behaviour.py:754 FSM transiting from recherche to echec.
+INFO     spade.behaviour:behaviour.py:731 FSM running state echec
+INFO     livraison.messages:base.py:84 RECU  commande-1 <- dispatcher | inform recherche-infructueuse | cmd-1 | 1 comportement(s)
+INFO     livraison.messages:base.py:77 ENVOI dispatcher -> commande-1 | inform recherche-infructueuse | cmd-1
+INFO     spade.behaviour:behaviour.py:767 FSM arrived to a final state (no transitions found). Killing FSM.
+INFO     spade.behaviour:behaviour.py:184 Killing behavior FSMBehaviour/AppelDOffres with exit code: None
+INFO     spade.behaviour:behaviour.py:184 Killing behavior FSMBehaviour/AppelDOffres with exit code: None
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/livreur/boite "HTTP/1.1 200 OK"
+=========================== short test summary info ===========================
+FAILED tests/test_api.py::test_parcours_complet - IndexError: list index out ...
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! KeyboardInterrupt !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\selectors.py:305: KeyboardInterrupt
+(to show a full traceback on KeyboardInterrupt use --full-trace)
+======================== 1 failed in 296.90s (0:04:56) ========================
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-72' coro=<CyclicBehaviour._start() running at C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py:170> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[gather.<locals>._done_callback() at C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\tasks.py:822]>
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-68' coro=<CyclicBehaviour._start() running at C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py:170> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[gather.<locals>._done_callback() at C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\tasks.py:822]>
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-69' coro=<CyclicBehaviour._start() running at C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py:170> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[gather.<locals>._done_callback() at C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\tasks.py:822]>
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-71' coro=<CyclicBehaviour._start() running at C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py:170> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[gather.<locals>._done_callback() at C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\tasks.py:822]>
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-70' coro=<CyclicBehaviour._start() running at C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py:170> wait_for=<Future pending cb=[Task.task_wakeup()]> cb=[gather.<locals>._done_callback() at C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\tasks.py:822]>
+Exception running behaviour CyclicBehaviour/AppelsOffres: Event loop is closed
+Traceback (most recent call last):
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 186, in get
+GeneratorExit
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py", line 315, in _step
+  File "C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py", line 304, in _run
+  File "C:\projets\livraison-sma\src\livraison\agents\livreur.py", line 109, in run
+  File "C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py", line 389, in receive
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\tasks.py", line 507, in wait_for
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 188, in get
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 834, in call_soon
+    self._check_closed()
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 557, in _check_closed
+    raise RuntimeError('Event loop is closed')
+RuntimeError: Event loop is closed
+
+Exception running behaviour CyclicBehaviour/Contrats: Event loop is closed
+Traceback (most recent call last):
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 186, in get
+GeneratorExit
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py", line 315, in _step
+  File "C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py", line 304, in _run
+  File "C:\projets\livraison-sma\src\livraison\agents\livreur.py", line 133, in run
+  File "C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py", line 389, in receive
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\tasks.py", line 507, in wait_for
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 188, in get
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 834, in call_soon
+    self._check_closed()
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 557, in _check_closed
+    raise RuntimeError('Event loop is closed')
+RuntimeError: Event loop is closed
+
+Exception running behaviour CyclicBehaviour/Retours: Event loop is closed
+Traceback (most recent call last):
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 186, in get
+GeneratorExit
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py", line 315, in _step
+  File "C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py", line 304, in _run
+  File "C:\projets\livraison-sma\src\livraison\agents\livreur.py", line 203, in run
+  File "C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py", line 389, in receive
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\tasks.py", line 507, in wait_for
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 188, in get
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 834, in call_soon
+    self._check_closed()
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 557, in _check_closed
+    raise RuntimeError('Event loop is closed')
+RuntimeError: Event loop is closed
+
+Exception running behaviour CyclicBehaviour/Telephone: Event loop is closed
+Traceback (most recent call last):
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 186, in get
+GeneratorExit
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py", line 315, in _step
+  File "C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py", line 304, in _run
+  File "C:\projets\livraison-sma\src\livraison\agents\livreur.py", line 160, in run
+  File "C:\projets\livraison-sma\.venv\Lib\site-packages\spade\behaviour.py", line 389, in receive
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\tasks.py", line 507, in wait_for
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 188, in get
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 834, in call_soon
+    self._check_closed()
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 557, in _check_closed
+    raise RuntimeError('Event loop is closed')
+RuntimeError: Event loop is closed
+
+Exception ignored in: <function XMLStream.__del__ at 0x0000017A0341CD60>
+Traceback (most recent call last):
+  File "C:\projets\livraison-sma\.venv\Lib\site-packages\slixmpp\xmlstream\xmlstream.py", line 1522, in __del__
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 834, in call_soon
+  File "C:\Users\LECONCRET\AppData\Local\Programs\Python\Python313\Lib\asyncio\base_events.py", line 557, in _check_closed
+RuntimeError: Event loop is closed
+Task was destroyed but it is pending!
+task: <Task cancelling name='Task-171' coro=<XMLStream.run_filters() running at C:\projets\livraison-sma\.venv\Lib\site-packages\slixmpp\xmlstream\xmlstream.py:1276> wait_for=<Future cancelled>>

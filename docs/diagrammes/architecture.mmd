@@ -1,0 +1,34 @@
+flowchart TB
+  subgraph Apps["1. Applications (Flet)"]
+    direction LR
+    L["Application livreur<br/>(Android, lot 3)"]
+    C["Espace client<br/>(web, lot 4)"]
+    R["Console du répartiteur<br/>(web, réalisée)"]
+  end
+  subgraph Serveur["2. Serveur applicatif FastAPI"]
+    API["API REST + WebSocket · connexion par code SMS · jetons JWT · rôles"]
+  end
+  subgraph SMA["3. Système multi-agents SPADE (messages FIPA-ACL sur XMPP)"]
+    direction LR
+    PA["Passerelle"]
+    CO["Commande<br/>(une par commande)"]
+    DI["Dispatcher<br/>(Contract Net)"]
+    AN["Annuaire<br/>(pages jaunes)"]
+    LI["Livreur<br/>(un par livreur)"]
+    AUX["Paiement · Notification<br/>Superviseur"]
+  end
+  subgraph Bas["4. Services métier et données"]
+    direction LR
+    SV["Coût · Tarification<br/>Itinéraires (OSRM ou estimation)"]
+    PG[("PostgreSQL + PostGIS<br/>commandes, offres, paiements,<br/>journal des messages")]
+  end
+  Apps -- "HTTP / JSON" --> API
+  API -- "transmettre()" --> PA
+  PA --> CO & LI
+  CO --> DI
+  DI --> AN
+  DI --> LI
+  CO --> AUX
+  SMA --> SV
+  SMA --> PG
+  API -. "WebSocket : événements en direct" .-> R

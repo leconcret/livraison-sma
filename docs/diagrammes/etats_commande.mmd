@@ -1,0 +1,21 @@
+stateDiagram-v2
+  [*] --> Creee
+  Creee --> Validee: payée, ou paiement à la livraison
+  Creee --> Annulee
+  Validee --> Recherche
+  Recherche --> Recherche: aucune offre (relance)
+  Recherche --> Attribuee: livreur confirmé
+  Recherche --> Annulee: sans frais
+  Attribuee --> Enlevee: enlèvement validé
+  Attribuee --> Recherche: refus, panne, GPS perdu, réattribution
+  Attribuee --> Annulee: avec frais
+  Enlevee --> Livree: code du destinataire correct
+  Enlevee --> Echec: destinataire absent, adresse introuvable
+  Enlevee --> Recherche: panne ou accident
+  Livree --> Cloturee: encaissement
+  Livree --> Litige
+  Cloturee --> Litige
+  Echec --> Cloturee
+  Litige --> Cloturee
+  Cloturee --> [*]
+  Annulee --> [*]
