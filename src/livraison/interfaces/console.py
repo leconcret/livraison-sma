@@ -113,10 +113,11 @@ async def main(page: ft.Page):
     page.padding = 0
     page.theme_mode = ft.ThemeMode.LIGHT
     http = httpx.AsyncClient(base_url=API, timeout=10)
-    etat = {"entetes": None, "selection": None, "vue": "commandes", "livreurs": [], "role": None}
+    etat = {"entetes": None, "selection": None, "vue": "commandes", "livreurs": [], "role": None,
+            "actif": False}
 
     # ------------------------------------------------------------ connexion
-    tel = ft.TextField(label="Téléphone du répartiteur", value=TEL_DEFAUT, width=280)
+    tel = ft.TextField(label="Téléphone (répartiteur ou administrateur)", value=TEL_DEFAUT, width=320)
     code = ft.TextField(label="Code reçu par SMS", width=280, visible=False)
     message = ft.Text("", color=ft.Colors.RED_700)
 
@@ -142,15 +143,31 @@ async def main(page: ft.Page):
             return
         etat["entetes"] = {"Authorization": f"Bearer {r.json()['jeton']}"}
         etat["role"] = r.json()["role"]
+        appliquer_role(tel.value)
+        etat["actif"] = True
         page.controls.clear()
         page.add(ecran)
         page.update()
         page.run_task(boucle)
 
+    async def deconnecter(e):
+        try:
+            await http.post("/auth/deconnexion", headers=etat["entetes"])
+        except httpx.HTTPError:
+            pass
+        etat.update(actif=False, entetes=None, role=None, selection=None)
+        code.visible, code.value, message.value = False, "", ""
+        bouton.content, bouton.on_click = "Recevoir un code", demander_code
+        page.controls.clear()
+        page.add(connexion)
+        page.update()
+
     bouton = ft.Button("Recevoir un code", on_click=demander_code)
     connexion = ft.Container(ft.Column([
         ft.Text("Livraison SMA", size=28, weight=ft.FontWeight.BOLD),
-        ft.Text("Console du répartiteur", size=16, color=ft.Colors.GREY_700),
+        ft.Text("Console de supervision", size=16, color=ft.Colors.GREY_700),
+        ft.Text("Répartiteur : 0700000001  ·  Administrateur : 0700000000", size=12,
+                color=ft.Colors.GREY_600),
         tel, code, bouton, message], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=14),
         alignment=ft.Alignment.CENTER, expand=True)
 
@@ -174,6 +191,8 @@ async def main(page: ft.Page):
     k_att, v_att = indicateur("En attente de livreur")
     k_dec, v_dec = indicateur("Décision SMA (moy.)")
     k_clo, v_clo = indicateur("Clôturées")
+    k_val, v_val = indicateur("Livreurs à valider")  # visible pour l'administrateur seulement
+    k_val.visible = False
 
     # ---------------------------------------------------------- panneaux droits
     liste_cmd = ft.ListView(expand=True, spacing=4)
@@ -204,7 +223,7 @@ async def main(page: ft.Page):
 
     onglets = ft.Row([ft.TextButton(t, data=v, on_click=lambda e: montrer(e.control.data))
                       for t, v in (("Commandes", "commandes"), ("Sniffer", "sniffer"),
-                                   ("Journal des agents", "journal"), ("Alertes", "alertes"),
+                                   ("Journal", "journal"), ("Alertes", "alertes"),
                                    ("Livreurs", "livreurs"))],
                      spacing=2)
 
@@ -302,11 +321,14 @@ async def main(page: ft.Page):
         if l["en_ligne"]:
             details += f" · courses en cours {agent.get('charge', 0)}"
         boutons = []
-        if not l["valide"]:
+        if not l["valide"] and est_admin():
             boutons.append(ft.Button(
-                "Valider", icon=ft.Icons.VERIFIED, disabled=not est_admin(),
-                tooltip=None if est_admin() else "réservé à l'administrateur (0700000000)",
+                "Valider", icon=ft.Icons.VERIFIED,
                 on_click=lambda e, lid=l["id"]: page.run_task(valider_livreur, lid)))
+        elif not l["valide"]:
+            boutons.append(ft.Row([ft.Icon(ft.Icons.LOCK, size=16, color=ft.Colors.GREY_600),
+                                   ft.Text("validation par l'administrateur", size=11,
+                                           italic=True, color=ft.Colors.GREY_700)], spacing=4))
         boutons.append(ft.OutlinedButton(
             "Réactiver" if l["suspendu"] else "Suspendre",
             icon=ft.Icons.PLAY_ARROW if l["suspendu"] else ft.Icons.BLOCK,
@@ -422,6 +444,12 @@ async def main(page: ft.Page):
         dec = disp.get("decision_s") or {}
         v_dec.value = f"{dec['moyenne'] * 1000:.1f} ms" if dec.get("moyenne") is not None else "–"
         v_clo.value = str(stats["par_etat"].get("cloturee", 0))
+        if est_admin():
+            rl = await http.get("/admin/livreurs", headers=h)
+            if rl.status_code == 200:
+                n = sum(1 for l in rl.json() if not l["valide"])
+                v_val.value = str(n)
+                v_val.color = ft.Colors.DEEP_ORANGE_700 if n else None
         liste_cmd.controls = [
             ft.ListTile(dense=True, on_click=lambda e, cid=c["id"]: page.run_task(ouvrir, cid),
                         title=ft.Text(f"#{c['id']}  {c['prix']} FCFA  ·  {c['distance_km']} km"
@@ -457,30 +485,59 @@ async def main(page: ft.Page):
                                    f"livreur {c['livreur_id'] or '—'} · tentatives {c['tentatives']}")
             zone_sniffer.controls = [diagramme_sequence(d.get("journal", []), 930, 80)]
 
+    # ------------------------------------------------------- rôle connecté (F-02)
+    icone_role = ft.Icon(ft.Icons.HEADSET_MIC, color=ft.Colors.WHITE, size=18)
+    texte_role = ft.Text("", color=ft.Colors.WHITE, weight=ft.FontWeight.BOLD, size=13)
+    detail_role = ft.Text("", color=ft.Colors.WHITE, size=11)
+    badge_role = ft.Container(ft.Row([icone_role, ft.Column([texte_role, detail_role], spacing=0)],
+                                     spacing=8, tight=True),
+                              padding=ft.Padding.symmetric(horizontal=12, vertical=6), border_radius=18)
+    bouton_deco = ft.TextButton("Déconnexion", icon=ft.Icons.LOGOUT, on_click=deconnecter)
+    bandeau = ft.Container(padding=10)
+
+    def appliquer_role(telephone: str) -> None:
+        admin = est_admin()
+        icone_role.icon = ft.Icons.ADMIN_PANEL_SETTINGS if admin else ft.Icons.HEADSET_MIC
+        texte_role.value = "ADMINISTRATEUR" if admin else "RÉPARTITEUR"
+        detail_role.value = (f"{telephone} · comptes, validations, argent" if admin
+                             else f"{telephone} · supervision des livraisons")
+        badge_role.bgcolor = ft.Colors.INDIGO_700 if admin else ft.Colors.TEAL_700
+        bandeau.bgcolor = ft.Colors.INDIGO_50 if admin else ft.Colors.TEAL_50
+        bandeau.border = ft.Border.only(bottom=ft.BorderSide(3, ft.Colors.INDIGO_700 if admin
+                                                             else ft.Colors.TEAL_700))
+        page.title = ("Livraison SMA · Administration" if admin
+                      else "Livraison SMA · Console du répartiteur")
+        k_val.visible = admin
+        for b in onglets.controls:  # libellé de l'onglet selon les droits
+            if b.data == "livreurs":
+                b.content = "Gestion livreurs" if admin else "Livreurs"
+
     async def boucle():
         tour = 0
-        while True:
+        while etat["actif"]:
             tour += 1
             try:
                 await rafraichir()
                 if etat["vue"] == "livreurs" and tour % 3 == 0:
                     await rafraichir_livreurs()
             except Exception as e:  # noqa: BLE001
-                print("console : rafraîchissement impossible :", e)
+                if etat["actif"]:
+                    print("console : rafraîchissement impossible :", e)
             await asyncio.sleep(2)
 
     droite = ft.Container(ft.Column([
-        ft.Row([k_liv, k_act], spacing=8), ft.Row([k_att, k_dec, k_clo], spacing=8),
+        ft.Row([k_liv, k_act, k_val], spacing=8), ft.Row([k_att, k_dec, k_clo], spacing=8),
         onglets, ft.Divider(height=1), zone], spacing=8, expand=True),
         width=520, padding=12)
     ecran = ft.Row([
-        ft.Column([ft.Container(ft.Row([ft.Text("Livraison SMA · Abidjan", size=18,
-                                                weight=ft.FontWeight.BOLD), legende],
-                                       alignment=ft.MainAxisAlignment.SPACE_BETWEEN, wrap=True),
-                                padding=10),
-                   ft.Container(carte, expand=True)], expand=True, spacing=0),
+        ft.Column([bandeau, ft.Container(carte, expand=True)], expand=True, spacing=0),
         ft.VerticalDivider(width=1), droite], expand=True, spacing=0)
 
+    bandeau.content = ft.Column([
+        ft.Row([ft.Row([ft.Text("Livraison SMA · Abidjan", size=18, weight=ft.FontWeight.BOLD),
+                        badge_role], spacing=12, wrap=True),
+                bouton_deco], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+        legende], spacing=6)
     page.add(connexion)
 
 
