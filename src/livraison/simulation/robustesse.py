@@ -17,6 +17,8 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import os
+import sys
 import time
 
 import httpx
@@ -263,6 +265,8 @@ def main() -> None:
     a = p.parse_args()
     if a.rapide:
         parametres.delai_confirmation_s, parametres.gps_alerte_s, parametres.gps_reattribution_s = 15, 8, 20
+    if sys.platform == "win32":
+        os.system("")  # active les couleurs ANSI dans l'invite de commandes Windows
     asyncio.run(Demo(a.api).lancer(a.scenario or [1, 2, 3, 4, 5]))
 
 

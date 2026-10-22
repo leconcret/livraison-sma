@@ -148,7 +148,14 @@ async def comptes_initiaux(depot) -> None:
 
 @asynccontextmanager
 async def cycle_de_vie(app: FastAPI):
-    logging.basicConfig(level=logging.INFO)
+    # Terminal lisible : avertissements des bibliothèques (SPADE, slixmpp, uvicorn) et messages
+    # INFO du projet seulement. La trace de chaque message entre agents (logger
+    # « livraison.messages ») ne s'affiche qu'avec python -m livraison.lancer --trace.
+    logging.basicConfig(level=logging.WARNING, format="%(asctime)s %(levelname)s %(name)s : %(message)s",
+                        datefmt="%H:%M:%S")
+    logging.getLogger("livraison").setLevel(logging.INFO)
+    logging.getLogger("livraison.messages").setLevel(
+        logging.INFO if parametres.trace_messages else logging.WARNING)
     etat.depot = await construire_depot()
     etat.bus = Bus(etat.depot)
     etat.moteur = await creer_moteur(parametres.osrm_url)

@@ -5,6 +5,7 @@
     python -m livraison.lancer --demo 15       # + 15 livreurs et des clients simulés
     python -m livraison.lancer --sans-xmpp     # si le serveur XMPP tourne déjà dans un autre terminal
     python -m livraison.lancer --memoire --rapide   # pour la démonstration de robustesse
+    python -m livraison.lancer --trace         # + chaque message ACL entre agents dans le terminal
 
 Puis, dans un autre terminal : python -m livraison.interfaces.console --web
 """
@@ -33,12 +34,21 @@ async def principal(args) -> None:
         if not port_libre(parametres.xmpp_port):
             raise SystemExit(f"Le port {parametres.xmpp_port} est occupé : un serveur XMPP tourne "
                              "déjà ? Relancez avec --sans-xmpp.")
+        # Journal du serveur XMPP réduit aux avertissements : sans cela, chaque connexion d'agent
+        # s'affiche (« Connection from ... ») et noie les messages utiles du terminal.
+        import sys
+
+        from loguru import logger
+        logger.remove()
+        logger.add(sys.stderr, level="WARNING")
         taches.append(asyncio.create_task(serveur_xmpp.demarrer(parametres.xmpp_port)))
         while port_libre(parametres.xmpp_port):
             await asyncio.sleep(0.2)
         print(f"Serveur XMPP intégré prêt (port {parametres.xmpp_port}).")
     if args.memoire:
         parametres.depot = "memoire"
+    if args.trace:
+        parametres.trace_messages = True
     if args.rapide:
         # Délais raccourcis pour une démonstration en direct (valeurs réelles : 30 s, 60 s, 180 s).
         parametres.delai_confirmation_s = 15
@@ -68,6 +78,8 @@ def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--memoire", action="store_true", help="sans PostgreSQL (données perdues à l'arrêt)")
     p.add_argument("--sans-xmpp", action="store_true", help="utiliser un serveur XMPP déjà lancé (python -m livraison.serveur_xmpp)")
+    p.add_argument("--trace", action="store_true",
+                   help="afficher chaque message ACL échangé entre agents (ENVOI / RECU)")
     p.add_argument("--rapide", action="store_true",
                    help="délais raccourcis pour la démonstration de robustesse")
     p.add_argument("--demo", type=int, default=0, metavar="N", help="simuler N livreurs et des clients")

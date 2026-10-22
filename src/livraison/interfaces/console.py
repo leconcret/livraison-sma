@@ -113,7 +113,7 @@ async def main(page: ft.Page):
     page.padding = 0
     page.theme_mode = ft.ThemeMode.LIGHT
     http = httpx.AsyncClient(base_url=API, timeout=10)
-    etat = {"entetes": None, "selection": None, "vue": "commandes", "livreurs": []}
+    etat = {"entetes": None, "selection": None, "vue": "commandes", "livreurs": [], "role": None}
 
     # ------------------------------------------------------------ connexion
     tel = ft.TextField(label="Téléphone du répartiteur", value=TEL_DEFAUT, width=280)
@@ -141,6 +141,7 @@ async def main(page: ft.Page):
             page.update()
             return
         etat["entetes"] = {"Authorization": f"Bearer {r.json()['jeton']}"}
+        etat["role"] = r.json()["role"]
         page.controls.clear()
         page.add(ecran)
         page.update()
@@ -184,12 +185,17 @@ async def main(page: ft.Page):
     sniffer = ft.Column([ft.Text("Diagramme de séquence en direct (vrais messages ACL entre agents)",
                                  size=12, color=ft.Colors.GREY_700), titre_sniffer, zone_sniffer],
                         expand=True, spacing=6)
+    liste_livreurs = ft.ListView(expand=True, spacing=6)
+    resume_livreurs = ft.Text("", size=12, color=ft.Colors.GREY_700)
+    gestion = ft.Column([resume_livreurs, liste_livreurs], expand=True, spacing=6)
     panneaux = {"commandes": liste_cmd, "journal": journal, "alertes": alertes, "fiche": fiche,
-                "sniffer": sniffer}
+                "sniffer": sniffer, "livreurs": gestion}
     zone = ft.Container(liste_cmd, expand=True)
 
     def montrer(vue: str):
         etat["vue"] = vue
+        if vue == "livreurs":
+            page.run_task(rafraichir_livreurs)
         zone.content = panneaux[vue]
         droite.width = 960 if vue == "sniffer" else 520  # le Sniffer prend la place de la carte
         for b in onglets.controls:
@@ -198,7 +204,8 @@ async def main(page: ft.Page):
 
     onglets = ft.Row([ft.TextButton(t, data=v, on_click=lambda e: montrer(e.control.data))
                       for t, v in (("Commandes", "commandes"), ("Sniffer", "sniffer"),
-                                   ("Journal des agents", "journal"), ("Alertes", "alertes"))],
+                                   ("Journal des agents", "journal"), ("Alertes", "alertes"),
+                                   ("Livreurs", "livreurs"))],
                      spacing=2)
 
     def ligne_message(e: dict) -> ft.Control:
@@ -273,6 +280,121 @@ async def main(page: ft.Page):
                                              else r.json().get("detail", "refusée"))))
         await ouvrir(cid)
 
+    # ------------------------------------------- gestion des livreurs (F-03, F-54, F-62)
+    def est_admin() -> bool:
+        return etat.get("role") == "admin"
+
+    def statut_livreur(l: dict) -> tuple[str, object]:
+        if l["suspendu"]:
+            return "Suspendu", ft.Colors.RED_700
+        if not l["valide"]:
+            return "À valider", ft.Colors.DEEP_ORANGE_600
+        if l["en_ligne"]:
+            return "En ligne", ft.Colors.GREEN_700
+        return "Hors ligne", ft.Colors.GREY_600
+
+    def ligne_livreur(l: dict) -> ft.Control:
+        texte, couleur = statut_livreur(l)
+        agent = l.get("agent") or {}
+        details = (f"{l['telephone']} · {l['vehicule']} · capacité {l['capacite']} · "
+                   f"note {l['note']:.1f} ({l['nb_evaluations']} avis) · espèces détenues "
+                   f"{l['especes_detenues']} FCFA")
+        if l["en_ligne"]:
+            details += f" · courses en cours {agent.get('charge', 0)}"
+        boutons = []
+        if not l["valide"]:
+            boutons.append(ft.Button(
+                "Valider", icon=ft.Icons.VERIFIED, disabled=not est_admin(),
+                tooltip=None if est_admin() else "réservé à l'administrateur (0700000000)",
+                on_click=lambda e, lid=l["id"]: page.run_task(valider_livreur, lid)))
+        boutons.append(ft.OutlinedButton(
+            "Réactiver" if l["suspendu"] else "Suspendre",
+            icon=ft.Icons.PLAY_ARROW if l["suspendu"] else ft.Icons.BLOCK,
+            on_click=lambda e, lid=l["id"], s=not l["suspendu"]: page.run_task(suspendre_livreur, lid, s)))
+        boutons.append(ft.TextButton("Relevé", icon=ft.Icons.RECEIPT_LONG,
+                                     on_click=lambda e, lid=l["id"]: page.run_task(ouvrir_releve, lid)))
+        return ft.Container(ft.Column([
+            ft.Row([ft.Text(f"#{l['id']}  {l['nom'] or 'Sans nom'}", size=14, weight=ft.FontWeight.BOLD),
+                    pastille(texte, couleur)], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+            ft.Text(details, size=11, color=ft.Colors.GREY_800),
+            ft.Row(boutons, spacing=6, wrap=True)], spacing=4),
+            padding=10, border_radius=8,
+            bgcolor=ft.Colors.with_opacity(0.05, ft.Colors.BLUE_GREY_900))
+
+    async def rafraichir_livreurs():
+        r = await http.get("/admin/livreurs", headers=etat["entetes"])
+        if r.status_code != 200:
+            resume_livreurs.value = "Liste des livreurs indisponible."
+            page.update()
+            return
+        ls = r.json()
+        # Les dossiers à valider d'abord, puis les livreurs en ligne, puis les autres.
+        ls.sort(key=lambda l: (l["valide"], not l["en_ligne"], l["suspendu"], l["id"]))
+        a_valider = sum(1 for l in ls if not l["valide"])
+        resume_livreurs.value = (f"{len(ls)} livreur(s) inscrit(s) · {a_valider} à valider · "
+                                 f"{sum(1 for l in ls if l['en_ligne'])} en ligne · "
+                                 f"{sum(1 for l in ls if l['suspendu'])} suspendu(s)"
+                                 + ("" if est_admin() else "  —  connectez-vous en administrateur "
+                                    "(0700000000) pour valider et encaisser les reversements"))
+        liste_livreurs.controls = [ligne_livreur(l) for l in ls]
+        page.update()
+
+    async def valider_livreur(lid: int):
+        r = await http.post(f"/admin/livreurs/{lid}/valider", headers=etat["entetes"])
+        page.show_dialog(ft.SnackBar(ft.Text(f"Livreur {lid} validé : il peut passer en ligne"
+                                             if r.status_code == 200 else
+                                             r.json().get("detail", "refusé"))))
+        await rafraichir_livreurs()
+
+    async def suspendre_livreur(lid: int, suspendu: bool):
+        r = await http.post(f"/admin/livreurs/{lid}/suspendre?suspendu={str(suspendu).lower()}",
+                            headers=etat["entetes"])
+        page.show_dialog(ft.SnackBar(ft.Text(
+            (f"Livreur {lid} suspendu : il ne reçoit plus de propositions" if suspendu
+             else f"Livreur {lid} réactivé") if r.status_code == 200
+            else r.json().get("detail", "refusé"))))
+        await rafraichir_livreurs()
+
+    async def ouvrir_releve(lid: int):
+        r = await http.get(f"/admin/livreurs/{lid}/releve", headers=etat["entetes"])
+        if r.status_code != 200:
+            return
+        rv = r.json()
+        montant = ft.TextField(label="Espèces remises (FCFA)", width=200, dense=True,
+                               value=str(rv["especes_detenues"]) if rv["especes_detenues"] else "",
+                               keyboard_type=ft.KeyboardType.NUMBER)
+
+        async def encaisser(e):
+            try:
+                m = int(montant.value)
+            except (TypeError, ValueError):
+                return
+            r2 = await http.post(f"/admin/livreurs/{lid}/reversement", headers=etat["entetes"],
+                                 json={"montant": m})
+            page.pop_dialog()
+            page.show_dialog(ft.SnackBar(ft.Text(f"Reversement de {m} FCFA enregistré"
+                                                 if r2.status_code == 200 else
+                                                 r2.json().get("detail", "refusé"))))
+            await rafraichir_livreurs()
+
+        lignes = [("Courses facturées", rv["courses_facturees"]),
+                  ("Chiffre d'affaires", f"{rv['chiffre_affaires']} FCFA"),
+                  ("Gains du livreur", f"{rv['gains']} FCFA"),
+                  ("Commission plateforme", f"{rv['commission_plateforme']} FCFA"),
+                  ("Espèces détenues", f"{rv['especes_detenues']} FCFA"),
+                  ("Déjà reversé", f"{rv['especes_deja_reversees']} FCFA"),
+                  ("Solde", f"{rv['solde']} FCFA ({rv['sens']})")]
+        contenu = [ft.Row([ft.Text(k, size=12, width=170, color=ft.Colors.GREY_700),
+                           ft.Text(str(v), size=12, weight=ft.FontWeight.W_600)]) for k, v in lignes]
+        actions = [ft.TextButton("Fermer", on_click=lambda e: page.pop_dialog())]
+        if est_admin() and rv["especes_detenues"] > 0:
+            contenu.append(montant)
+            actions.insert(0, ft.Button("Encaisser le reversement", icon=ft.Icons.PAYMENTS,
+                                        on_click=encaisser))
+        page.show_dialog(ft.AlertDialog(title=ft.Text(f"Relevé du livreur {lid}"),
+                                        content=ft.Column(contenu, tight=True, spacing=6),
+                                        actions=actions))
+
     # ----------------------------------------------------------- rafraîchissement
     async def rafraichir():
         h = etat["entetes"]
@@ -336,9 +458,13 @@ async def main(page: ft.Page):
             zone_sniffer.controls = [diagramme_sequence(d.get("journal", []), 930, 80)]
 
     async def boucle():
+        tour = 0
         while True:
+            tour += 1
             try:
                 await rafraichir()
+                if etat["vue"] == "livreurs" and tour % 3 == 0:
+                    await rafraichir_livreurs()
             except Exception as e:  # noqa: BLE001
                 print("console : rafraîchissement impossible :", e)
             await asyncio.sleep(2)

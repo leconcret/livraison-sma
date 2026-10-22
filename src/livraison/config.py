@@ -41,6 +41,8 @@ class Parametres(BaseSettings):
     gps_reattribution_s: float = 180.0
     # Durée de validité d'un jeton de connexion (heures).
     duree_jeton_h: int = 12
+    # Afficher dans le terminal chaque message ACL envoyé et reçu par les agents.
+    trace_messages: bool = False
 
     @property
     def postgres_dsn(self) -> str:
