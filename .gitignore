@@ -17,3 +17,5 @@ pyjabber.db
 *.db-shm
 *.db-wal
 .flet/
+*.txt
+!requirements*.txt
