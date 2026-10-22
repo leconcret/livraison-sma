@@ -200,9 +200,25 @@ async def main(page: ft.Page):
     alertes = ft.ListView(expand=True, spacing=4)
     fiche = ft.Column(expand=True, scroll=ft.ScrollMode.AUTO, spacing=6)
     titre_sniffer = ft.Text("", size=13, weight=ft.FontWeight.BOLD)
+    champ_cmd = ft.TextField(label="N° de commande", width=150, dense=True,
+                             keyboard_type=ft.KeyboardType.NUMBER,
+                             on_submit=lambda e: choisir_commande())
+
+    def choisir_commande():
+        try:
+            etat["selection"] = int(champ_cmd.value)
+        except (TypeError, ValueError):
+            etat["selection"] = None  # vide : la commande la plus récente
+        page.run_task(rafraichir)
     zone_sniffer = ft.Column([], scroll=ft.ScrollMode.AUTO, expand=True)
-    sniffer = ft.Column([ft.Text("Diagramme de séquence en direct (vrais messages ACL entre agents)",
-                                 size=12, color=ft.Colors.GREY_700), titre_sniffer, zone_sniffer],
+    sniffer = ft.Column([
+        ft.Text("Diagramme de séquence en direct (vrais messages ACL entre agents)",
+                size=12, color=ft.Colors.GREY_700),
+        ft.Row([champ_cmd, ft.OutlinedButton("Afficher", icon=ft.Icons.SEARCH,
+                                             on_click=lambda e: choisir_commande()),
+                ft.Text("(vide : la commande la plus récente, même terminée)", size=11,
+                        color=ft.Colors.GREY_600)], spacing=8, wrap=True),
+        titre_sniffer, zone_sniffer],
                         expand=True, spacing=6)
     liste_livreurs = ft.ListView(expand=True, spacing=6)
     resume_livreurs = ft.Text("", size=12, color=ft.Colors.GREY_700)
@@ -217,6 +233,9 @@ async def main(page: ft.Page):
             page.run_task(rafraichir_livreurs)
         zone.content = panneaux[vue]
         droite.width = 960 if vue == "sniffer" else 520  # le Sniffer prend la place de la carte
+        detail_role.visible = vue != "sniffer"  # bandeau compact quand la carte est étroite
+        legende.visible = vue != "sniffer"
+        bouton_deco.content = "Déconnexion" if vue != "sniffer" else ""
         for b in onglets.controls:
             b.style = ft.ButtonStyle(bgcolor=ft.Colors.BLUE_GREY_100 if b.data == vue else None)
         page.update()
@@ -334,7 +353,7 @@ async def main(page: ft.Page):
             icon=ft.Icons.PLAY_ARROW if l["suspendu"] else ft.Icons.BLOCK,
             on_click=lambda e, lid=l["id"], s=not l["suspendu"]: page.run_task(suspendre_livreur, lid, s)))
         boutons.append(ft.TextButton("Relevé", icon=ft.Icons.RECEIPT_LONG,
-                                     on_click=lambda e, lid=l["id"]: page.run_task(ouvrir_releve, lid)))
+                                     on_click=lambda e, lid=l["id"], nom=l["nom"]: page.run_task(ouvrir_releve, lid, nom)))
         return ft.Container(ft.Column([
             ft.Row([ft.Text(f"#{l['id']}  {l['nom'] or 'Sans nom'}", size=14, weight=ft.FontWeight.BOLD),
                     pastille(texte, couleur)], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
@@ -377,13 +396,13 @@ async def main(page: ft.Page):
             else r.json().get("detail", "refusé"))))
         await rafraichir_livreurs()
 
-    async def ouvrir_releve(lid: int):
+    async def ouvrir_releve(lid: int, nom: str = ""):
         r = await http.get(f"/admin/livreurs/{lid}/releve", headers=etat["entetes"])
         if r.status_code != 200:
             return
         rv = r.json()
         montant = ft.TextField(label="Espèces remises (FCFA)", width=200, dense=True,
-                               value=str(rv["especes_detenues"]) if rv["especes_detenues"] else "",
+                               value=str(-rv["solde"]) if rv["solde"] < 0 else "",
                                keyboard_type=ft.KeyboardType.NUMBER)
 
         async def encaisser(e):
@@ -409,11 +428,15 @@ async def main(page: ft.Page):
         contenu = [ft.Row([ft.Text(k, size=12, width=170, color=ft.Colors.GREY_700),
                            ft.Text(str(v), size=12, weight=ft.FontWeight.W_600)]) for k, v in lignes]
         actions = [ft.TextButton("Fermer", on_click=lambda e: page.pop_dialog())]
-        if est_admin() and rv["especes_detenues"] > 0:
+        if est_admin() and rv["solde"] < 0:  # le livreur doit encore la commission
             contenu.append(montant)
             actions.insert(0, ft.Button("Encaisser le reversement", icon=ft.Icons.PAYMENTS,
                                         on_click=encaisser))
-        page.show_dialog(ft.AlertDialog(title=ft.Text(f"Relevé du livreur {lid}"),
+        if rv["solde"] >= 0:
+            contenu.append(ft.Text("Compte soldé : le livreur ne doit rien à la plateforme." if rv["solde"] == 0
+                                   else "La plateforme doit ses gains au livreur.",
+                                   size=12, color=ft.Colors.GREEN_800, weight=ft.FontWeight.W_600))
+        page.show_dialog(ft.AlertDialog(title=ft.Text(f"Relevé de {nom or 'livreur'} (n° {lid})"),
                                         content=ft.Column(contenu, tight=True, spacing=6),
                                         actions=actions))
 
@@ -474,10 +497,17 @@ async def main(page: ft.Page):
         if cid is None:  # pas de commande choisie : la plus récente qui a des messages
             ids = [e.get("commande_id") for e in jr if e["categorie"] == "message" and e.get("commande_id")]
             cid = ids[-1] if ids else None
+        if cid is None:  # rien en cours : la dernière commande créée, même terminée
+            r = await http.get("/commandes?limite=1", headers=etat["entetes"])
+            if r.status_code == 200 and r.json():
+                cid = r.json()[0]["id"]
         if cid is None:
             titre_sniffer.value = "En attente de messages..."
             return
         r = await http.get(f"/commandes/{cid}", headers=etat["entetes"])
+        if r.status_code != 200:
+            titre_sniffer.value = f"Commande {cid} introuvable."
+            zone_sniffer.controls = []
         if r.status_code == 200:
             d = r.json()
             c = d["commande"]

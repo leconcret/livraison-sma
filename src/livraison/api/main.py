@@ -476,7 +476,8 @@ async def releve_livreur(lid: int) -> dict:
     return {"livreur_id": lid, "courses_facturees": len(fs), "chiffre_affaires": gains + commission,
             "gains": gains, "commission_plateforme": commission,
             "especes_detenues": lv.especes_detenues, "especes_deja_reversees": reverse,
-            "solde": solde, "sens": "la plateforme doit au livreur" if solde >= 0
+            "solde": solde, "sens": "compte soldé" if solde == 0
+            else "la plateforme doit au livreur" if solde > 0
             else "le livreur doit reverser à la plateforme", "note": lv.note,
             "factures": [f["numero"] for f in fs][-20:]}
 
