@@ -10,7 +10,7 @@ Projet du Master 2 Systèmes multi-agents, réalisé en Python : SPADE · FastAP
 
 ## En chiffres
 
-| | |
+| Mesure | Résultat |
 |---|---|
 | Décision du système multi-agents | **0,08 s** en moyenne (exigence : moins de 5 s) |
 | Test de charge | 200 commandes simultanées, 100 livreurs : **200 livrées sur 200** |
@@ -50,9 +50,13 @@ La console affiche les vrais messages ACL échangés pour n'importe quelle comma
 
 ## Les trois applications
 
-| Livreur : proposition, trajet, remise par code | Client : commande, suivi, facture |
-|---|---|
-| ![Application livreur](docs/images/app_livreur.png) | ![Suivi client](docs/images/suivi_client.png) |
+**Livreur** : proposition de course avec compte à rebours, trajet sur la carte, remise du colis par code.
+
+![Application livreur](docs/images/app_livreur.png)
+
+**Client** : commande en touchant la carte, prix garanti, suivi en direct, facture.
+
+![Suivi client](docs/images/suivi_client.png)
 
 La **console** (répartiteur et administrateur) réunit la carte en direct, les commandes, le journal des agents, les alertes, la validation des livreurs et leur relevé de gains.
 
