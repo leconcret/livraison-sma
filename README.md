@@ -129,4 +129,4 @@ Le dossier de conception, avec les cas d'utilisation, les états d'une commande,
 
 ## Auteur
 
-**leconcret** — Master 2 Systèmes multi-agents, 2026.
+**ANON AMONCOU DIOM SEBASTIEN** — Master 2 Systèmes multi-agents, 2026.
